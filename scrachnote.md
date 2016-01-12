@@ -38,4 +38,33 @@ Google到：[python - httplib.BadStatusLine: '' - Stack Overflow](http://stackov
 
 服务器返回一个不认识的状态码。
 
-说是headers验证的问题。
+作者说是headers验证的问题。  
+
+加上验证：  
+
+    # header验证
+	user_agent = 'Mozilla/4.0(compatible; MSIE 5.5; Windows NT)'
+	headers = {'User-Agent': user_agent}  
+
+仍然以上错误。后来才发现，添加这段代码后，没有更改Request的参数：  
+
+    request = urllib2.Request(url, headers=headers)  
+
+下一个错误提示是：  
+
+    txt.write(soup.prettify())
+ ‘ascii’ codec can’t encode characters in 421-428  
+
+参照这里：http://blog.csdn.net/panyanyany/article/details/17251225，改成：  
+
+    txt.write(soup.prettify().encode('utf-8'))
+解决。
+
+下一个错误提示是：
+    txt1.write(soup.div.string)  
+~~"Nonetype" object has no attribute 'string'~~   
+TypeError: expected a character buffer object  
+
+打印soup.div.string类型，原来是“NoneType”。于是给它加了个`str()`  
+
+结果：html确实写进去了。但是`soup.div.string`用错了，导致txt文件中存的是一个none。
